@@ -1,0 +1,22 @@
+>inner join
+預設
+有交集才會顯示
+
+>left join
+交集跟非交集都會顯示
+A(主表) join B(次表)
+A+AB交集
+
+>GROUP BY
+包成群組
+
+>子查詢
+SELECT * FROM
+
+>UNION
+A UNION B (疊加起來)
+資料結構要一樣
+
+>WITH AS (暫存)
+先AS出新資料
+

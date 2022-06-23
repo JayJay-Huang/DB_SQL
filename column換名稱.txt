@@ -1,0 +1,1 @@
+exec sp_rename '舊名稱' , '新名稱'

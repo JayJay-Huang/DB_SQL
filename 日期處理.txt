@@ -1,0 +1,534 @@
+
+SELECT DATEADD(MONTH, -6, GETDATE()) // 6 month ago
+
+----
+
+https://blog.xuite.net/chenshichang/date/23228518
+
+-檢查是否為SQL SERVER合法日期格式
+
+SELECT ISDATE('2004-03-01')
+
+--1 (int)正確
+
+SELECT ISDATE('2004-02-33')
+
+--0 (int)錯誤
+
+--取得現在時間GETDATE()
+
+select GETDATE()
+
+--2008-04-26 03:25:31.900
+
+--取得現在UTC 時間 (國際標準時間或格林威治標準時間)GETUTCDATE()
+
+select GETUTCDATE()
+
+--2008-04-25 19:30:23.650
+
+--取得年.月.日及其它時間單位值
+
+select year(getdate())
+
+select datepart(yyyy, getdate())
+
+select datepart(yy, getdate())
+
+--2008 yyyy(int)年
+
+select month(getdate())
+
+select datepart(mm, getdate())
+
+select datepart(m, getdate())
+
+--4 mm(int)月
+
+select day(getdate())
+
+select datepart(dd, getdate())
+
+select datepart(d, getdate())
+
+--26 dd(int)日
+
+select datepart(qq, getdate())
+
+--2 qq(int)第幾季
+
+select datepart(dw, getdate())
+
+--7 dw(int)星期幾
+
+其它datepar的參數參考下表:
+
+Datepart
+
+Abbreviations
+
+年 year
+
+yy, yyyy
+
+季 quarter
+
+qq, q
+
+月 month
+
+mm, m
+
+年的第幾天 dayofyear
+
+dy, y
+
+日 day
+
+dd, d
+
+年的第幾週 week
+
+wk, ww
+
+星期的第幾天 weekday
+
+預設1=日 2=一....7=六
+
+dw
+
+時 hour
+
+hh
+
+分 minute
+
+mi, n
+
+秒 second
+
+ss, s
+
+毫秒 millisecond
+
+ms
+
+--取得指定日期部分的字串DATENAME()--使用參數同上表datepar參數
+
+SELECT DATENAME(month, GETDATE())
+
+--四月 今天是四月所以傳回=四月,系統地區若為英語系傳回April
+
+SELECT DATENAME(dw, GETDATE())
+
+--星期六
+
+--取得星期幾的單一中文字(日,一,二,三,四,五,六)
+
+SELECT Right(datename(weekday,getdate()),1)
+
+--六 今天是星期六所以傳回=六,系統地區語言必須為中文地區
+
+SELECT CASE datepart(dw, getdate())
+
+WHEN 1 THEN '日'
+WHEN 2 THEN '一'
+WHEN 3 THEN '二'
+WHEN 4 THEN '三'
+WHEN 5 THEN '四'
+WHEN 6 THEN '五'
+WHEN 7 THEN '六' END
+
+--六 今天是星期六所以傳回=六
+
+--設定一星期的開始日為哪天--影響datepart,datename使用參數weekday,dw的回傳值
+
+SET DATEFIRST 7 --設定星期天為一星期的第1天 (預設為7)
+
+select @@DATEFIRST
+
+--7 (int)
+
+Value
+
+First day of the week is
+
+1
+
+Monday
+
+2
+
+Tuesday
+
+3
+
+Wednesday
+
+4
+
+Thursday
+
+5
+
+Friday
+
+6
+
+Saturday
+
+7 (default, U.S. English)
+
+Sunday
+
+--取得10天前或10天後日期(參數請看上面datepar參數表)
+
+SELECT DATEADD(day, -10, '04/30/2008')
+
+--2008-04-20 00:00:00.000
+
+SELECT DATEADD(day, 10, '04/30/2008')
+
+--2008-05-10 00:00:00.000
+
+--計算兩時間差(參數請看上面datepar參數表)
+
+SELECT DATEDIFF(day,GETDATE(),'04/30/2008')
+
+--4 (int)
+
+--轉換時間格式
+
+ 
+
+不帶世紀數位 (yy)
+
+帶世紀數位 (yyyy)
+
+
+標準
+
+
+輸入/輸出**
+
+-
+
+0 或 100 (*)
+
+預設值
+
+mon dd yyyy hh:miAM（或 PM）
+
+1
+
+101
+
+美國
+
+mm/dd/yyyy
+
+2
+
+102
+
+ANSI
+
+yy.mm.dd
+
+3
+
+103
+
+英國/法國
+
+dd/mm/yy
+
+4
+
+104
+
+德國
+
+dd.mm.yy
+
+5
+
+105
+
+義大利
+
+dd-mm-yy
+
+6
+
+106
+
+-
+
+dd mon yy
+
+7
+
+107
+
+-
+
+mon dd, yy
+
+8
+
+108
+
+-
+
+hh:mm:ss
+
+-
+
+9 或 109 (*)
+
+預設值 + 毫秒
+
+mon dd yyyy hh:mi:ss:mmmAM（或 PM）
+
+10
+
+110
+
+美國
+
+mm-dd-yy
+
+11
+
+111
+
+日本
+
+yy/mm/dd
+
+12
+
+112
+
+ISO
+
+yymmdd
+
+-
+
+13 或 113 (*)
+
+歐洲預設值 + 毫秒
+
+dd mon yyyy hh:mm:ss:mmm(24h)
+
+14
+
+114
+
+-
+
+hh:mi:ss:mmm(24h)
+
+-
+
+20 或 120 (*)
+
+ODBC 規範
+
+yyyy-mm-dd hh:mm:ss[.fff]
+
+-
+
+21 或 121 (*)
+
+ODBC 規範（帶毫秒）
+
+yyyy-mm-dd hh:mm:ss[.fff]
+
+-
+
+126(***)
+
+ISO8601
+
+yyyy-mm-dd Thh:mm:ss:mmm（不含空格）
+
+-
+
+130*
+
+科威特
+
+dd mon yyyy hh:mi:ss:mmmAM
+
+-
+
+131*
+
+科威特
+
+dd/mm/yy hh:mi:ss:mmmAM
+
+ 
+
+select convert(char, getdate(), 100)
+
+--04 26 2008 2:04AM mon dd yyyy hh:mmAM(PM)
+
+select convert(char, getdate(), 101)
+
+--04/26/2008 mm/dd/yyyy
+select convert(char, getdate(), 102)
+
+--2008.04.26 yyyy.mm.dd
+
+select convert(char, getdate(), 103)
+
+--26/04/2008 dd/mm/yyyy
+select convert(char, getdate(), 104)
+
+--26.04.2008 dd.mm.yyyy
+select convert(char, getdate(), 105)
+
+--26-04-2008 dd-mm-yyyy
+select convert(char, getdate(), 106)
+
+--26 04 2008 dd mon yyyy
+select convert(char, getdate(), 107)
+
+--04 26, 2008 mon dd, yyyy
+select convert(char, getdate(), 108)
+
+--02:04:53 hh:mm:ss
+select convert(char, getdate(), 109)
+
+--04 26 2008 2:04:53:583AM mon dd yyyy hh:mm:ss:mmmAM(PM)
+select convert(char, getdate(), 110)
+
+--04-26-2008 mm-dd-yyyy
+select convert(char, getdate(), 111)
+
+--2008/04/26 yyyy/mm/dd
+select convert(char, getdate(), 112)
+
+--20080426 yyyymmdd
+
+select convert(char(6), getdate(), 112)
+
+--200804 yyyymm
+
+select convert(char, getdate(), 113)
+
+--26 04 2008 02:04:53:583 dd mon yyyy hh:mm:ss:mmm
+select convert(char, getdate(), 114)
+
+--02:04:53:583 hh:mm:ss:mmm(24h)
+select convert(char, getdate(), 120)
+
+--2008-04-26 02:04:53 yyyy-mm-dd hh:mm:ss(24h)
+
+select convert(char(7), getdate(), 120)
+
+--2008-04 yyyy-mm
+select convert(char, getdate(), 121)
+
+--2008-04-26 02:04:53.583 yyyy-mm-dd hh:mm:ss.mmm
+
+資料類型
+
+範圍
+
+精確度
+
+datetime
+
+1753 年 1 月 1 日到 9999 年 12 月 31 日
+
+3.33 毫秒
+
+smalldatetime
+
+1900 年 1 月 1 日到 2079 年 6 月 6 日
+
+1 分鐘
+
+--取得這個小時開始的時間
+SELECT DATEADD(hh,DATEDIFF(hh,0,getdate()),0)
+--2008-04-26 06:00:00.000 (datetime)
+
+--取得下個小時開始的時間
+SELECT DATEADD(hh,1,DATEADD(hh,DATEDIFF(hh,0,getdate()),0))
+--2008-04-26 07:00:00.000 (datetime)
+
+--取得今天開始的時間(凌晨12點)
+SELECT DATEADD(dd,DATEDIFF(dd,0,getdate()),0)
+--2008-04-26 00:00:00.000 (datetime)
+
+
+--取得本週的星期日,星期一(本週開始日為星期日)
+SELECT DATEADD(wk,DATEDIFF(wk,0,getdate()),-1)
+--2008-04-20 00:00:00.000 (datetime)
+
+SELECT DATEADD(wk,DATEDIFF(wk,0,getdate()),0)
+--2008-04-21 00:00:00.000 (datetime)
+
+--取得上週五,上週六
+SELECT DATEADD(wk,DATEDIFF(wk,0,getdate()),-3)
+--2008-04-18 00:00:00.000 (datetime)
+
+SELECT DATEADD(wk,DATEDIFF(wk,0,getdate()),-2)
+--2008-04-19 00:00:00.000 (datetime)
+
+--取得本月的第一天
+SELECT DATEADD(mm,DATEDIFF(mm,0,getdate()),0)
+--2008-04-01 00:00:00.000 (datetime)
+
+--取得下個月的第一天
+SELECT dateadd(mm,1,DATEADD(mm,DATEDIFF(mm,0,getdate()),0))
+--2008-05-01 00:00:00.000 (datetime)
+
+--取得本月的最後一天
+SELECT dateadd(dd,-1,DATEADD(mm,DATEDIFF(m,0,getdate())+1,0))
+--2008-04-30 00:00:00.000 (datetime)
+SELECT dateadd(ms,-3,DATEADD(mm,DATEDIFF(m,0,getdate())+1,0))
+--2008-04-30 23:59:59.997 (datetime)
+
+--取得上個月的最後一天
+SELECT dateadd(dd,-1,DATEADD(mm,DATEDIFF(mm,0,getdate()),0))
+--2008-03-31 00:00:00.000 (datetime)
+SELECT dateadd(ms,-3,DATEADD(mm,DATEDIFF(mm,0,getdate()),0))
+--2008-03-31 23:59:59.997 (datetime)
+
+--取得本月天數
+SELECT Day(dateadd(dd,-1,DATEADD(mm, DATEDIFF(m,0,getdate())+1, 0)))
+--30 (int)
+
+--取得本季的第一天
+SELECT DATEADD(qq,DATEDIFF(qq,0,getdate()),0)
+--2008-04-01 00:00:00.000 (datetime)
+
+
+--取得下一季的第一天
+SELECT DATEADD(qq,DATEDIFF(qq,0,dateadd(mm,3,getdate())),0)
+--2008-07-01 00:00:00.000 (datetime)
+
+
+--取得本季天數
+SELECT DATEDIFF(dd,DATEADD(qq,DATEDIFF(qq,0,getdate()),0),DATEADD(qq,DATEDIFF(qq,0,dateadd(mm,3,getdate())),0))
+--91 (int)
+
+--取得今年的第一天
+SELECT DATEADD(yy,DATEDIFF(yy,0,getdate()),0)
+--2008-01-01 00:00:00.000 (datetime)
+
+--取得明年的第一天
+SELECT DATEADD(yy,1,DATEADD(yy,DATEDIFF(yy,0,getdate()),0))
+--2009-01-01 00:00:00.000 (datetime)
+
+--取得去年的最後一天
+SELECT dateadd(dd,-1,DATEADD(yy,DATEDIFF(yy,0,getdate()),0))
+--2007-12-31 00:00:00.000 (datetime)
+SELECT dateadd(ms,-2,DATEADD(yy,DATEDIFF(yy,0,getdate()),0))
+--2007-12-31 23:59:59.997 (datetime)
